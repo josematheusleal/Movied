@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-// Conteúdo para Grafo.java
-
 package recomendaFilmes;
 
 import java.util.ArrayList;
@@ -9,14 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-=======
-package recomendaFilmes;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
->>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
 import java.util.stream.Collectors;
 
 public class Grafo {
@@ -38,11 +27,9 @@ public class Grafo {
     }
 
     public void adicionarAresta(Vertice origem, Vertice destino, double peso) {
-<<<<<<< HEAD
+        // A condição "peso > 0" garante que apenas filmes que atendem aos
+        // critérios de similaridade sejam conectados.
         if (peso > 0) {
-=======
-        if (peso > 0) { // Só cria arestas com similaridade positiva
->>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
             arestas.add(new Aresta(origem, destino, peso));
         }
     }
@@ -62,40 +49,39 @@ public class Grafo {
                 Vertice v1 = vertices.get(i);
                 Vertice v2 = vertices.get(j);
                 double similaridade = calcularSimilaridade(v1, v2);
-<<<<<<< HEAD
-                
-                // Adiciona um print para depuração, se desejar
-                if (similaridade > 0) {
-                    // System.out.println("Aresta entre " + v1.getNome() + " e " + v2.getNome() + ": " + similaridade);
-                }
-
-=======
->>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
                 adicionarAresta(v1, v2, similaridade);
                 adicionarAresta(v2, v1, similaridade); // Grafo não direcionado
             }
         }
     }
 
-<<<<<<< HEAD
     /**
-     * CORRIGIDO: A lógica foi flexibilizada. A similaridade só será 0 se não
-     * houver NENHUMA característica em comum. A regra do "E" foi removida.
+     * MODIFICADO: Calcula a similaridade apenas se os filmes compartilharem um gênero
+     * E pelo menos uma outra característica (ator, diretor, produtora).
+     * Caso contrário, retorna 0.
      */
     private double calcularSimilaridade(Vertice v1, Vertice v2) {
-        // --- Passo 1: Verificar se há PELO MENOS UMA característica em comum ---
+        // --- Passo 1: Verificar as condições mínimas para criar uma aresta ---
+
+        // Condição 1: Precisam compartilhar pelo menos um gênero.
+        // Collections.disjoint retorna 'true' se as listas NÃO têm elementos em comum.
         boolean generosEmComum = !Collections.disjoint(v1.getGeneros(), v2.getGeneros());
+
+        // Condição 2: Precisam compartilhar ator, diretor OU produtora.
+        // Objects.equals é usado para tratar casos onde os valores podem ser nulos.
         boolean atorEmComum = Objects.equals(v1.getAtorPrincipal(), v2.getAtorPrincipal());
         boolean diretorEmComum = Objects.equals(v1.getDiretor(), v2.getDiretor());
         boolean produtoraEmComum = Objects.equals(v1.getProdutora(), v2.getProdutora());
+        boolean outraCaracteristicaEmComum = atorEmComum || diretorEmComum || produtoraEmComum;
 
-        // Se não houver absolutamente NADA em comum, a similaridade é 0.
-        if (!generosEmComum && !atorEmComum && !diretorEmComum && !produtoraEmComum) {
+        // Se uma das condições principais não for atendida, a similaridade é 0.
+        if (!generosEmComum || !outraCaracteristicaEmComum) {
             return 0.0;
         }
 
-        // --- Passo 2: Se houver algo em comum, calcular o score ponderado ---
+        // --- Passo 2: Se as condições foram atendidas, calcular o score ponderado ---
 
+        // Similaridade de Gêneros (Peso: 40%)
         long nGenerosComuns = v1.getGeneros().stream()
                 .filter(v2.getGeneros()::contains)
                 .count();
@@ -105,33 +91,20 @@ public class Grafo {
             similaridadeGeneros = (double) nGenerosComuns / maxGeneros;
         }
 
+        // Similaridade de Ator Principal (Peso: 25%)
         double similaridadeAtor = atorEmComum ? 1.0 : 0.0;
+
+        // Similaridade de Diretor (Peso: 25%)
         double similaridadeDiretor = diretorEmComum ? 1.0 : 0.0;
+
+        // Similaridade de Produtora (Peso: 10%)
         double similaridadeProdutora = produtoraEmComum ? 1.0 : 0.0;
 
-        // O cálculo ponderado permanece o mesmo
+        // Cálculo Final Ponderado
         return (0.40 * similaridadeGeneros) +
                (0.25 * similaridadeAtor) +
                (0.25 * similaridadeDiretor) +
                (0.10 * similaridadeProdutora);
-=======
-    private double calcularSimilaridade(Vertice v1, Vertice v2) {
-        // Similaridade de gêneros (peso 60%)
-        long generosComuns = v1.getGeneros().stream()
-                .filter(v2.getGeneros()::contains)
-                .count();
-        double similaridadeGeneros = (double) generosComuns / 
-                Math.max(v1.getGeneros().size(), v2.getGeneros().size());
-
-        // Similaridade de atores (peso 40%)
-        long atoresComuns = v1.getAtores().stream()
-                .filter(v2.getAtores()::contains)
-                .count();
-        double similaridadeAtores = (double) atoresComuns / 
-                Math.max(v1.getAtores().size(), v2.getAtores().size());
-
-        return (0.6 * similaridadeGeneros) + (0.4 * similaridadeAtores);
->>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
     }
 
     public Vertice getVerticePorNome(String nome) {

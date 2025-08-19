@@ -27,7 +27,6 @@
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
         </dependency>
-<<<<<<< HEAD
     
       <dependency>
         <groupId>org.scala-lang</groupId>
@@ -46,7 +45,5 @@
         <artifactId>hibernate-core</artifactId>
         <version>5.4.4.Final</version>
       </dependency>
-=======
->>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
     </dependencies>
 </project>
