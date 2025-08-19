@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 // Conteúdo para Main.java
 
+=======
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
 package recomendaFilmes;
 
 import com.google.gson.JsonObject;
@@ -17,16 +20,23 @@ public class Main {
         System.out.print("Digite o nome de um filme: ");
         String filmeBaseNome = sc.nextLine();
         JsonObject filmeBaseJson = tmdb.searchMovie(filmeBaseNome);
+<<<<<<< HEAD
 
         if (filmeBaseJson == null) {
             System.out.println("Filme não encontrado.");
             sc.close();
+=======
+        
+        if (filmeBaseJson == null) {
+            System.out.println("Filme não encontrado.");
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
             return;
         }
 
         // 2. Criar vértice para o filme base
         int idBase = filmeBaseJson.get("id").getAsInt();
         JsonObject detalhesBase = tmdb.getMovieDetails(idBase);
+<<<<<<< HEAD
 
         List<String> generosBase = tmdb.getMovieGenres(detalhesBase);
         String atorBase = tmdb.getMovieMainActor(detalhesBase);
@@ -40,10 +50,21 @@ public class Main {
                 atorBase,
                 diretorBase,
                 produtoraBase
+=======
+        List<String> generosBase = tmdb.getMovieGenres(detalhesBase);
+        List<String> atoresBase = tmdb.getMovieActors(idBase);
+        
+        Vertice filmeBase = new Vertice(
+            filmeBaseJson.get("title").getAsString(),
+            idBase,
+            generosBase,
+            atoresBase
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
         );
         grafo.adicionarVertice(filmeBase);
 
         // 3. Adicionar filmes populares ao grafo
+<<<<<<< HEAD
         System.out.println("Buscando filmes semelhantes. Aguarde...");
 List<JsonObject> populares = tmdb.getPopularMovies(100); 
 for (JsonObject filme : populares) {
@@ -69,11 +90,29 @@ for (JsonObject filme : populares) {
     );
     grafo.adicionarVertice(vertice);
 }
+=======
+        List<JsonObject> populares = tmdb.getPopularMovies();
+        for (JsonObject filme : populares) {
+            int id = filme.get("id").getAsInt();
+            if (id == idBase) continue;
+
+            JsonObject detalhes = tmdb.getMovieDetails(id);
+            Vertice vertice = new Vertice(
+                filme.get("title").getAsString(),
+                id,
+                tmdb.getMovieGenres(detalhes),
+                tmdb.getMovieActors(id)
+            );
+            grafo.adicionarVertice(vertice);
+        }
+
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
         // 4. Gerar relações de similaridade
         grafo.gerarArestasSimilaridade();
 
         // 5. Obter recomendações
         System.out.println("\nRecomendações para '" + filmeBase.getNome() + "':");
+<<<<<<< HEAD
         List<Vertice> recomendacoes = grafo.recomendarFilmes(filmeBase, 3);
         
         if (recomendacoes.isEmpty()) {
@@ -83,5 +122,10 @@ for (JsonObject filme : populares) {
         }
 
         sc.close();
+=======
+        List<Vertice> recomendacoes = grafo.recomendarFilmes(filmeBase, 5);
+        recomendacoes.forEach(v -> System.out.println("- " + v.getNome()));
+    sc. close();
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
     }
 }

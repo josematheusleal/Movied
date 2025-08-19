@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Conteúdo para Grafo.java
 
 package recomendaFilmes;
@@ -8,6 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+=======
+package recomendaFilmes;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
 import java.util.stream.Collectors;
 
 public class Grafo {
@@ -29,7 +38,11 @@ public class Grafo {
     }
 
     public void adicionarAresta(Vertice origem, Vertice destino, double peso) {
+<<<<<<< HEAD
         if (peso > 0) {
+=======
+        if (peso > 0) { // Só cria arestas com similaridade positiva
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
             arestas.add(new Aresta(origem, destino, peso));
         }
     }
@@ -49,18 +62,22 @@ public class Grafo {
                 Vertice v1 = vertices.get(i);
                 Vertice v2 = vertices.get(j);
                 double similaridade = calcularSimilaridade(v1, v2);
+<<<<<<< HEAD
                 
                 // Adiciona um print para depuração, se desejar
                 if (similaridade > 0) {
                     // System.out.println("Aresta entre " + v1.getNome() + " e " + v2.getNome() + ": " + similaridade);
                 }
 
+=======
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
                 adicionarAresta(v1, v2, similaridade);
                 adicionarAresta(v2, v1, similaridade); // Grafo não direcionado
             }
         }
     }
 
+<<<<<<< HEAD
     /**
      * CORRIGIDO: A lógica foi flexibilizada. A similaridade só será 0 se não
      * houver NENHUMA característica em comum. A regra do "E" foi removida.
@@ -97,6 +114,24 @@ public class Grafo {
                (0.25 * similaridadeAtor) +
                (0.25 * similaridadeDiretor) +
                (0.10 * similaridadeProdutora);
+=======
+    private double calcularSimilaridade(Vertice v1, Vertice v2) {
+        // Similaridade de gêneros (peso 60%)
+        long generosComuns = v1.getGeneros().stream()
+                .filter(v2.getGeneros()::contains)
+                .count();
+        double similaridadeGeneros = (double) generosComuns / 
+                Math.max(v1.getGeneros().size(), v2.getGeneros().size());
+
+        // Similaridade de atores (peso 40%)
+        long atoresComuns = v1.getAtores().stream()
+                .filter(v2.getAtores()::contains)
+                .count();
+        double similaridadeAtores = (double) atoresComuns / 
+                Math.max(v1.getAtores().size(), v2.getAtores().size());
+
+        return (0.6 * similaridadeGeneros) + (0.4 * similaridadeAtores);
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
     }
 
     public Vertice getVerticePorNome(String nome) {

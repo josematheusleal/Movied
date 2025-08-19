@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 // Conteúdo para TMDbClient.java
 
+=======
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
 package recomendaFilmes;
 
 import com.google.gson.*;
@@ -19,11 +22,16 @@ public class TMDbClient {
         return getFirstResult(url);
     }
 
+<<<<<<< HEAD
     /**
      * OTIMIZADO: Agora busca detalhes e créditos em uma única chamada de API.
      */
     public JsonObject getMovieDetails(int movieId) throws IOException {
         String url = BASE_URL + "/movie/" + movieId + "?api_key=" + API_KEY + "&language=pt-BR&append_to_response=credits";
+=======
+    public JsonObject getMovieDetails(int movieId) throws IOException {
+        String url = BASE_URL + "/movie/" + movieId + "?api_key=" + API_KEY + "&language=pt-BR";
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
         return getJson(url);
     }
 
@@ -38,6 +46,7 @@ public class TMDbClient {
         return genres;
     }
 
+<<<<<<< HEAD
    /**
      * OTIMIZADO: Extrai o ator principal do objeto de detalhes que já contém os créditos.
      * Não faz mais uma nova chamada de API.
@@ -94,6 +103,24 @@ public List<JsonObject> getPopularMovies(int totalPages) throws IOException {
     }
     return allMovies;
 }
+=======
+    public List<String> getMovieActors(int movieId) throws IOException {
+        String url = BASE_URL + "/movie/" + movieId + "/credits?api_key=" + API_KEY + "&language=pt-BR";
+        JsonObject json = getJson(url);
+        List<String> actors = new ArrayList<>();
+        JsonArray cast = json.getAsJsonArray("cast");
+        for (int i = 0; i < Math.min(5, cast.size()); i++) {
+            actors.add(cast.get(i).getAsJsonObject().get("name").getAsString());
+        }
+        return actors;
+    }
+
+    public List<JsonObject> getPopularMovies() throws IOException {
+        String url = BASE_URL + "/movie/popular?api_key=" + API_KEY + "&language=pt-BR&page=1";
+        return getResults(url);
+    }
+
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
     private JsonObject getFirstResult(String url) throws IOException {
         List<JsonObject> results = getResults(url);
         return results.isEmpty() ? null : results.get(0);
@@ -103,10 +130,15 @@ public List<JsonObject> getPopularMovies(int totalPages) throws IOException {
         JsonObject json = getJson(url);
         JsonArray arr = json.getAsJsonArray("results");
         List<JsonObject> list = new ArrayList<>();
+<<<<<<< HEAD
         if (arr != null) {
             for (JsonElement e : arr) {
                 list.add(e.getAsJsonObject());
             }
+=======
+        for (JsonElement e : arr) {
+            list.add(e.getAsJsonObject());
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
         }
         return list;
     }
@@ -114,6 +146,7 @@ public List<JsonObject> getPopularMovies(int totalPages) throws IOException {
     private JsonObject getJson(String url) throws IOException {
         Request request = new Request.Builder().url(url).build();
         try (Response response = client.newCall(request).execute()) {
+<<<<<<< HEAD
             if (response.body() != null) {
                 return JsonParser.parseString(response.body().string()).getAsJsonObject();
             }
@@ -121,3 +154,9 @@ public List<JsonObject> getPopularMovies(int totalPages) throws IOException {
         }
     }
 }
+=======
+            return JsonParser.parseString(response.body().string()).getAsJsonObject();
+        }
+    }
+}
+>>>>>>> 715c6b8eabfb78040cfc56944cdaf16208dfa403
