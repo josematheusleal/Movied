@@ -1,27 +1,56 @@
-// Conteúdo para TMDbClient.java
-
 package recomendaFilmes;
 
-import com.google.gson.*;
-import okhttp3.*;
-
 import java.io.IOException;
-import java.util.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class TMDbClient {
-    private static final String API_KEY = "baf716a6b18b1abc236b34dc1429f5d5";
+    private static final String API_KEY = "e9638467d7bf43bdcce5ade03964fc75";
     private static final String BASE_URL = "https://api.themoviedb.org/3";
     private final OkHttpClient client = new OkHttpClient();
-    private final Gson gson = new Gson();
 
     public JsonObject searchMovie(String query) throws IOException {
-        String url = BASE_URL + "/search/movie?api_key=" + API_KEY + "&language=pt-BR&query=" + query;
-        return getFirstResult(url);
+        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
+        String url = BASE_URL + "/search/movie?api_key=" + API_KEY + "&language=pt-BR&query=" + encodedQuery;
+        
+        System.out.println("Buscando filme: " + query);
+        
+        List<JsonObject> results = getResults(url);
+        
+        if (results.isEmpty()) {
+            System.out.println("Tentando busca sem idioma específico...");
+            url = BASE_URL + "/search/movie?api_key=" + API_KEY + "&query=" + encodedQuery;
+            results = getResults(url);
+        }
+        
+        if (!results.isEmpty()) {
+            JsonObject filme = results.get(0);
+            System.out.println("Filme encontrado: " + filme.get("title").getAsString());
+            if (results.size() > 1) {
+                System.out.println("Outros resultados encontrados:");
+                for (int i = 1; i < Math.min(5, results.size()); i++) {
+                    System.out.println("  - " + results.get(i).get("title").getAsString());
+                }
+            }
+            return filme;
+        }
+        
+        return null;
     }
 
-    /**
-     * OTIMIZADO: Agora busca detalhes e créditos em uma única chamada de API.
-     */
     public JsonObject getMovieDetails(int movieId) throws IOException {
         String url = BASE_URL + "/movie/" + movieId + "?api_key=" + API_KEY + "&language=pt-BR&append_to_response=credits";
         return getJson(url);
@@ -38,10 +67,6 @@ public class TMDbClient {
         return genres;
     }
 
-   /**
-     * OTIMIZADO: Extrai o ator principal do objeto de detalhes que já contém os créditos.
-     * Não faz mais uma nova chamada de API.
-     */
     public String getMovieMainActor(JsonObject movieDetailsWithCredits) {
         JsonObject credits = movieDetailsWithCredits.getAsJsonObject("credits");
         if (credits != null) {
@@ -53,10 +78,6 @@ public class TMDbClient {
         return null;
     }
 
-    /**
-     * OTIMIZADO: Extrai o diretor do objeto de detalhes que já contém os créditos.
-     * Não faz mais uma nova chamada de API.
-     */
     public String getMovieDirector(JsonObject movieDetailsWithCredits) {
         JsonObject credits = movieDetailsWithCredits.getAsJsonObject("credits");
         if (credits != null) {
@@ -73,9 +94,6 @@ public class TMDbClient {
         return null;
     }
 
-    /**
-     * NOVO: Extrai o nome da primeira produtora da lista.
-     */
     public String getMovieProductionCompany(JsonObject movieDetails) {
         JsonArray companies = movieDetails.getAsJsonArray("production_companies");
         if (companies != null && companies.size() > 0) {
@@ -83,39 +101,50 @@ public class TMDbClient {
         }
         return null;
     }
-    /**
-     * NOVO: Busca filmes populares com paginação.
-     */
-public List<JsonObject> getPopularMovies(int totalPages) throws IOException {
-    List<JsonObject> allMovies = new ArrayList<>();
-    for (int i = 1; i <= totalPages; i++) {
-        String url = BASE_URL + "/movie/popular?api_key=" + API_KEY + "&language=pt-BR&page=" + i;
-        allMovies.addAll(getResults(url));
-    }
-    return allMovies;
-}
-    private JsonObject getFirstResult(String url) throws IOException {
-        List<JsonObject> results = getResults(url);
-        return results.isEmpty() ? null : results.get(0);
+    
+    public List<JsonObject> getPopularMovies(int totalPages) throws IOException {
+        List<JsonObject> allMovies = new ArrayList<>();
+        System.out.print("Carregando filmes populares");
+        for (int i = 1; i <= totalPages; i++) {
+            String url = BASE_URL + "/movie/popular?api_key=" + API_KEY + "&language=pt-BR&page=" + i;
+            List<JsonObject> pageResults = getResults(url);
+            allMovies.addAll(pageResults);
+            if (i % 20 == 0) {
+                System.out.print(".");
+            }
+        }
+        System.out.println(" Total: " + allMovies.size() + " filmes");
+        return allMovies;
     }
 
     private List<JsonObject> getResults(String url) throws IOException {
-        JsonObject json = getJson(url);
-        JsonArray arr = json.getAsJsonArray("results");
-        List<JsonObject> list = new ArrayList<>();
-        if (arr != null) {
-            for (JsonElement e : arr) {
-                list.add(e.getAsJsonObject());
+        try {
+            JsonObject json = getJson(url);
+            JsonArray arr = json.getAsJsonArray("results");
+            List<JsonObject> list = new ArrayList<>();
+            if (arr != null) {
+                for (JsonElement e : arr) {
+                    list.add(e.getAsJsonObject());
+                }
             }
+            return list;
+        } catch (IOException | JsonSyntaxException e) {
+            System.err.println("Erro ao buscar dados: " + e.getMessage());
+            return new ArrayList<>();
         }
-        return list;
     }
 
     private JsonObject getJson(String url) throws IOException {
         Request request = new Request.Builder().url(url).build();
         try (Response response = client.newCall(request).execute()) {
-            if (response.body() != null) {
-                return JsonParser.parseString(response.body().string()).getAsJsonObject();
+            ResponseBody body = response.body();
+            if (body != null) {
+                String responseStr = body.string();
+                if (response.code() != 200) {
+                    System.err.println("Erro HTTP: " + response.code());
+                    System.err.println("Resposta: " + responseStr);
+                }
+                return JsonParser.parseString(responseStr).getAsJsonObject();
             }
             throw new IOException("Resposta da API vazia.");
         }

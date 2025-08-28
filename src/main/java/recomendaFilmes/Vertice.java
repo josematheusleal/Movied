@@ -1,16 +1,14 @@
-// Conteúdo para Vertice.java
-
 package recomendaFilmes;
 
 import java.util.List;
 
 public class Vertice {
-    private String nome;
-    private int idTmdb;
-    private List<String> generos;
-    private String atorPrincipal;
-    private String diretor;
-    private String produtora;
+    private final String nome;
+    private final int idTmdb;
+    private final List<String> generos;
+    private final String atorPrincipal;
+    private final String diretor;
+    private final String produtora;
 
     public Vertice(String nome, int idTmdb, List<String> generos, String atorPrincipal, String diretor, String produtora) {
         this.nome = nome;
@@ -21,14 +19,12 @@ public class Vertice {
         this.produtora = produtora;
     }
 
-    // Getters
     public String getNome() { return nome; }
     public int getIdTmdb() { return idTmdb; }
     public List<String> getGeneros() { return generos; }
     public String getAtorPrincipal() { return atorPrincipal; }
     public String getDiretor() { return diretor; }
     public String getProdutora() { return produtora; }
-
 
     @Override
     public boolean equals(Object obj) {
