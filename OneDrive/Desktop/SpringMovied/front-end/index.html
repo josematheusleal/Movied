@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOVIED - Recomendações de Filmes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* SEU CSS EXISTENTE VAI AQUI (NENHUMA MUDANÇA NECESSÁRIA NO CSS) */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', Arial, sans-serif; background-color: #0a0a0a; color: #fff; margin: 0; padding: 0; background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23101010"/><path d="M0 0L100 100" stroke="%23202020" stroke-width="1"/><path d="M100 0L0 100" stroke="%23202020" stroke-width="1"/></svg>'); background-attachment: fixed; background-size: cover; min-height: 100vh; position: relative; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 30%, rgba(229, 9, 20, 0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(229, 9, 20, 0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; }
+        .container { max-width: 800px; margin: 80px auto; padding: 40px; background-color: rgba(15, 15, 15, 0.9); border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7); text-align: center; position: relative; overflow: visible; backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .container::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.03), transparent); transform: rotate(30deg); pointer-events: none; }
+        .logo { font-size: 3.5rem; font-weight: 900; margin-bottom: 15px; color: #fff; text-shadow: 0 0 10px rgba(229, 9, 20, 0.7); letter-spacing: 2px; position: relative; display: inline-block; }
+        .logo span { color: #e50914; position: relative; }
+        .logo span::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, #e50914, transparent); }
+        .subtitle { font-size: 1.2rem; margin-bottom: 30px; color: #ccc; font-weight: 300; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; position: relative; z-index: 2; }
+        #movie-input { flex-grow: 1; padding: 12px; border: none; border-radius: 6px; font-size: 1rem; outline: none; background: rgba(40, 40, 40, 0.8); color: #fff; box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.1); }
+        #movie-input:focus { background: rgba(50, 50, 50, 0.9); box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.3); }
+        #movie-input::placeholder { color: #888; }
+        #search-button { padding: 12px 20px; background: linear-gradient(135deg, #e50914, #b8070f); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(229, 9, 20, 0.3); }
+        #search-button:hover { background: linear-gradient(135deg, #f40612, #e50914); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(229, 9, 20, 0.4); }
+        #search-button:active { transform: translateY(0); }
+        .suggestions-container { position: relative; width: 100%; }
+        .suggestions { position: absolute; top: 100%; left: 0; background: rgba(25, 25, 25, 0.98); border-radius: 8px; margin-top: 10px; width: 100%; max-height: 400px; overflow-y: auto; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6); z-index: 1001; text-align: left; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); scrollbar-width: thin; scrollbar-color: #e50914 #222; }
+        .suggestions::-webkit-scrollbar { width: 10px; }
+        .suggestions::-webkit-scrollbar-thumb { background: #e50914; border-radius: 5px; }
+        .suggestions::-webkit-scrollbar-track { background: #222; border-radius: 5px; }
+        .suggestion-item { display: flex; align-items: center; gap: 15px; padding: 15px; cursor: pointer; border-bottom: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; }
+        .suggestion-item:hover { background: rgba(229, 9, 20, 0.15); }
+        .suggestion-item img { width: 50px; height: 75px; object-fit: cover; border-radius: 5px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4); }
+        .suggestion-info { display: flex; flex-direction: column; }
+        .suggestion-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 4px; }
+        .suggestion-year { font-size: 0.9rem; color: #aaa; }
+        .loading-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 40px 0; min-height: 200px; }
+        .movie-loader { position: relative; width: 80px; height: 80px; margin-bottom: 20px; }
+        .film-reel { position: absolute; width: 100%; height: 100%; border: 4px solid rgba(255, 255, 255, 0.1); border-radius: 50%; border-top: 4px solid #e50914; animation: spin 1.5s linear infinite; }
+        .film-reel::before { content: ''; position: absolute; top: 50%; left: 50%; width: 60%; height: 60%; background: rgba(229, 9, 20, 0.2); border-radius: 50%; transform: translate(-50%, -50%); }
+        .film-reel::after { content: ''; position: absolute; top: 50%; left: 50%; width: 20%; height: 20%; background: #e50914; border-radius: 50%; transform: translate(-50%, -50%); }
+        .clapperboard { position: absolute; top: 50%; left: 50%; width: 30px; height: 22px; background: #333; border: 2px solid #e50914; transform: translate(-50%, -50%) rotate(0deg); animation: clap 1.5s ease-in-out infinite; }
+        .clapperboard::before { content: ''; position: absolute; top: -4px; left: 50%; width: 15px; height: 4px; background: #e50914; transform: translateX(-50%); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes clap { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 50% { transform: translate(-50%, -50%) rotate(20deg); } }
+        .loading-text { font-size: 1.2rem; color: #ccc; text-align: center; margin-top: 15px; }
+        .loading-dots { display: inline-block; position: relative; width: 80px; height: 20px; }
+        .loading-dots span { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #e50914; animation-timing-function: cubic-bezier(0, 1, 1, 0); }
+        .loading-dots span:nth-child(1) { left: 8px; animation: loading-dots1 0.6s infinite; }
+        .loading-dots span:nth-child(2) { left: 8px; animation: loading-dots2 0.6s infinite; }
+        .loading-dots span:nth-child(3) { left: 32px; animation: loading-dots2 0.6s infinite; }
+        .loading-dots span:nth-child(4) { left: 56px; animation: loading-dots3 0.6s infinite; }
+        @keyframes loading-dots1 { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        @keyframes loading-dots3 { 0% { transform: scale(1); } 100% { transform: scale(0); } }
+        @keyframes loading-dots2 { 0% { transform: translate(0, 0); } 100% { transform: translate(24px, 0); } }
+        #results-list { list-style: none; padding: 0; margin-top: 30px; text-align: left; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        #results-list li { background: linear-gradient(145deg, #1a1a1a, #222); border-radius: 10px; padding: 0; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); position: relative; height: 380px; display: flex; flex-direction: column; }
+        #results-list li:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(229, 9, 20, 0.3); }
+        .movie-poster { height: 250px; background-color: #333; background-size: cover; background-position: center; position: relative; }
+        .movie-poster::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+        .movie-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+        .movie-title { font-weight: 700; margin-bottom: 8px; font-size: 1.1rem; }
+        .movie-rating { display: flex; align-items: center; gap: 5px; color: #ffc107; font-size: 0.9rem; margin-top: auto; }
+        .no-results { grid-column: 1 / -1; text-align: center; padding: 30px; color: #888; font-style: italic; }
+        .hidden { display: none; }
+        @media (max-width: 850px) { .container { margin: 40px 20px; padding: 30px 20px; } .logo { font-size: 2.8rem; } #results-list { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); } }
+        @media (max-width: 600px) { .search-box { flex-direction: column; } .suggestions { width: 100%; } #results-list { grid-template-columns: 1fr; } .logo { font-size: 2.2rem; } .subtitle { font-size: 1rem; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #results-list li { animation: fadeIn 0.5s ease forwards; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="logo"><span>MOVIED</span></h1>
+        <p class="subtitle">Descubra filmes semelhantes aos seus favoritos!</p>
+        
+        <div class="search-box">
+            <div class="suggestions-container">
+                <input type="text" id="movie-input" placeholder="Digite o nome de um filme...">
+                <div id="suggestions" class="suggestions hidden"></div>
+            </div>
+            <button id="search-button">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </div>
+
+        <div id="loading" class="hidden">
+            <div class="loading-container">
+                <div class="movie-loader">
+                    <div class="film-reel"></div>
+                    <div class="clapperboard"></div>
+                </div>
+                <div class="loading-text">
+                    Buscando recomendações<span class="loading-dots"><span></span><span></span><span></span><span></span></span>
+                </div>
+            </div>
+        </div>
+        
+        <ul id="results-list"></ul>
+    </div>
+
+    <script>
+        const searchButton = document.getElementById('search-button');
+        const movieInput = document.getElementById('movie-input');
+        const resultsList = document.getElementById('results-list');
+        const loadingIndicator = document.getElementById('loading');
+        const suggestionsBox = document.getElementById('suggestions');
+
+        let typingTimeout;
+        const TMDB_API_KEY = "baf716a6b18b1abc236b34dc1429f5d5"; // Chave da API do TMDb
+
+        // --- AUTOCOMPLETE ---
+        movieInput.addEventListener('input', () => {
+            const query = movieInput.value.trim();
+            clearTimeout(typingTimeout);
+
+            if (query.length < 2) {
+                suggestionsBox.classList.add('hidden');
+                return;
+            }
+
+            typingTimeout = setTimeout(() => {
+                fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => renderSuggestions(data.results))
+                    .catch(err => console.error("Erro na busca TMDb:", err));
+            }, 300);
+        });
+
+        function renderSuggestions(movies) {
+            if (!movies || movies.length === 0) {
+                suggestionsBox.classList.add('hidden');
+                return;
+            }
+            suggestionsBox.innerHTML = '';
+            movies.slice(0, 8).forEach(movie => {
+                const item = document.createElement('div');
+                item.classList.add('suggestion-item');
+                const posterUrl = movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : 'https://via.placeholder.com/50x75?text=?';
+                const releaseYear = movie.release_date ? movie.release_date.substring(0, 4) : 'N/A';
+                item.innerHTML = `<img src="${posterUrl}" alt="${movie.title}"><div class="suggestion-info"><div class="suggestion-title">${movie.title}</div><div class="suggestion-year">${releaseYear}</div></div>`;
+                item.addEventListener('click', () => {
+                    movieInput.value = movie.title;
+                    suggestionsBox.classList.add('hidden');
+                });
+                suggestionsBox.appendChild(item);
+            });
+            suggestionsBox.classList.remove('hidden');
+        }
+
+        // --- BUSCAR RECOMENDAÇÕES NO BACKEND ---
+        searchButton.addEventListener('click', () => {
+            const movieName = movieInput.value.trim();
+            if (movieName === "") {
+                alert("Por favor, digite o nome de um filme.");
+                return;
+            }
+            resultsList.innerHTML = '';
+            loadingIndicator.classList.remove('hidden');
+            suggestionsBox.classList.add('hidden');
+
+            fetch(`http://localhost:8080/recommendations?movieName=${encodeURIComponent(movieName)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingIndicator.classList.add('hidden');
+                    if (!data || data.length === 0) {
+                        resultsList.innerHTML = '<li class="no-results">Nenhuma recomendação encontrada.</li>';
+                    } else {
+                        // MODIFICAÇÃO: 'data' agora é uma lista de objetos de filme
+                        data.forEach(movieData => {
+                            // Chama a função para criar o card DIRETAMENTE com os dados recebidos
+                            createMovieCard(movieData);
+                        });
+                    }
+                })
+                .catch(error => {
+                    loadingIndicator.classList.add('hidden');
+                    resultsList.innerHTML = '<li class="no-results">Erro ao conectar com o servidor. Verifique se o backend está rodando.</li>';
+                    console.error('Erro:', error);
+                });
+        });
+
+        // MODIFICAÇÃO: A função agora recebe o objeto de filme completo do nosso backend
+        function createMovieCard(movieData) {
+            const listItem = document.createElement('li');
+            
+            const posterUrl = movieData.poster_path
+                ? `https://image.tmdb.org/t/p/w300${movieData.poster_path}`
+                : 'https://via.placeholder.com/300x450/222/fff?text=Sem+Imagem';
+            
+            const rating = movieData.vote_average ? movieData.vote_average.toFixed(1) : 'N/A';
+            
+            listItem.innerHTML = `
+                <div class="movie-poster" style="background-image: url('${posterUrl}')"></div>
+                <div class="movie-info">
+                    <div class="movie-title">${movieData.title}</div>
+                    <div class="movie-rating">
+                        <i class="fas fa-star"></i> ${rating}
+                    </div>
+                </div>
+            `;
+            resultsList.appendChild(listItem);
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!movieInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

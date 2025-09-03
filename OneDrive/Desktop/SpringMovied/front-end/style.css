@@ -1,0 +1,138 @@
+/* Fonte Netflix-like */
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #141414;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container central com fundo transparente */
+.container {
+    max-width: 700px;
+    margin: 80px auto;
+    padding: 30px;
+    background-color: rgba(20, 20, 20, 0.85);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    text-align: center;
+}
+
+/* Título em vermelho Netflix */
+h1 {
+    font-size: 2.5rem;
+    color: #e50914;
+    margin-bottom: 20px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+/* Subtítulo */
+h2 {
+    margin-top: 30px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* Caixa de busca */
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+#movie-input {
+    flex-grow: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+}
+
+/* Botão vermelho estilo Netflix */
+#search-button {
+    padding: 12px 20px;
+    background-color: #e50914;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+}
+
+#search-button:hover {
+    background-color: #f40612;
+    transform: scale(1.05);
+}
+
+/* Lista de resultados em cards */
+#results-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+    text-align: left;
+}
+
+#results-list li {
+    background-color: #222;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 6px;
+    transition: transform 0.2s, background 0.3s;
+}
+
+#results-list li:hover {
+    transform: scale(1.03);
+    background-color: #333;
+}
+
+/* Indicador de carregamento */
+#loading {
+    margin-top: 15px;
+    font-style: italic;
+    color: #bbb;
+}
+
+/* Caixa de sugestões da busca */
+#suggestions {
+  position: absolute;       /* fixa logo abaixo do input */
+  top: 100%;                /* logo abaixo da barra */
+  left: 0;
+  width: 100%;
+  max-height: 400px;        /* altura maior para caber mais filmes */
+  overflow-y: auto;         /* ativa rolagem quando passar do limite */
+  background: #141414;      /* fundo escuro */
+  border: 1px solid #e50914;
+  border-top: none;         /* tira borda de cima pra grudar na barra */
+  z-index: 1000;            /* garante que fica acima de outros elementos */
+}
+
+.suggestions { max-height: 80vh; }
+
+
+/* Cada sugestão (filme) */
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.suggestion-item img {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.suggestion-item:hover {
+    background-color: #333;
+}
+
+
