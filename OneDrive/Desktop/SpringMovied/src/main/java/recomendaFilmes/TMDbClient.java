@@ -97,17 +97,21 @@ public class TMDbClient {
     }
 
     public List<JsonObject> discoverMoviesByGenres(List<Integer> genreIds, int totalPages) throws IOException {
-        if (genreIds == null || genreIds.isEmpty()) {
-            return new ArrayList<>();
-        }
-        String genreIdsString = genreIds.stream()
-                                        .map(String::valueOf)
-                                        .collect(Collectors.joining("|"));
-
         List<JsonObject> allMovies = new ArrayList<>();
+        String genreFilter = "";
+
+        // Cria o filtro de gênero apenas se a lista NÃO estiver vazia
+        if (genreIds != null && !genreIds.isEmpty()) {
+            String genreIdsString = genreIds.stream()
+                                            .map(String::valueOf)
+                                            .collect(Collectors.joining("|"));
+            genreFilter = "&with_genres=" + genreIdsString;
+        }
+
         for (int i = 1; i <= totalPages; i++) {
+            // Adiciona o filtro à URL somente se ele foi criado
             String url = BASE_URL + "/discover/movie?api_key=" + API_KEY +
-                         "&language=pt-BR&sort_by=popularity.desc&with_genres=" + genreIdsString +
+                         "&language=pt-BR&sort_by=popularity.desc" + genreFilter +
                          "&page=" + i;
             allMovies.addAll(getResults(url));
         }

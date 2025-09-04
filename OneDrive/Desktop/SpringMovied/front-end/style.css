@@ -135,4 +135,215 @@ h2 {
     background-color: #333;
 }
 
+/* Badges de similaridade */
+.similarity { margin-top: 12px; }
+.badges { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+.badge {
+  padding:6px 8px;
+  border-radius:6px;
+  font-size:0.85rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.badge.match {
+  background: rgba(40,160,40,0.15);
+  border-color: rgba(40,160,40,0.2);
+  color: #bff0bf;
+}
+.badge.no-match {
+  background: rgba(200,40,40,0.06);
+  border-color: rgba(200,40,40,0.12);
+  color: #ffbebe;
+}
 
+.mini-info { display:flex; gap:12px; color:#bbb; font-size:0.9rem; margin-bottom:8px; flex-wrap:wrap; }
+
+.score-row { display:flex; flex-direction:column; gap:6px; }
+.score-value { font-size:0.95rem; color:#fff; }
+.score-bar {
+  height:10px;
+  background: rgba(255,255,255,0.06);
+  border-radius:6px;
+  overflow:hidden;
+}
+.score-fill {
+  height:100%;
+  background: linear-gradient(90deg, #e50914, #ff8a6b);
+  width: 0%;
+  transition: width 600ms ease;
+}
+
+/* --- Similaridade / breakdown --- */
+.movie-card .movie-subline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.movie-score-badge {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.similarity {
+  margin-top: 10px;
+}
+
+.badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.badge {
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.badge.match {
+  background: rgba(40, 160, 40, 0.12);
+  border-color: rgba(40, 160, 40, 0.18);
+  color: #d9ffda;
+}
+
+.badge.no-match {
+  background: rgba(200, 40, 40, 0.06);
+  border-color: rgba(200, 40, 40, 0.12);
+  color: #ffdede;
+}
+
+/* Estilo de tópicos para os critérios */
+.criteria {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.criterion {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  padding-left: 16px;
+}
+
+.criterion::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #e50914;
+  font-size: 1.2rem;
+  line-height: 0.9;
+}
+
+.criterion.total {
+  margin-top: 6px;
+  padding-left: 0;
+}
+
+.criterion.total::before {
+  content: none;
+}
+
+.criterion-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #ddd;
+  line-height: 1.2;
+}
+
+.criterion-value {
+  font-weight: 700;
+  color: #fff;
+  margin-left: 8px;
+  font-size: 0.75rem;
+}
+
+.criterion-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.criterion-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff7a50, #e50914);
+  transition: width 600ms ease;
+}
+
+.criterion-fill.total-fill {
+  background: linear-gradient(90deg, #f1c40f, #e67e22);
+}
+
+/* Ajustes para telas pequenas */
+@media (max-width: 600px) {
+  .criterion-label {
+    font-size: 0.75rem;
+  }
+  
+  .movie-score-badge {
+    font-size: 0.75rem;
+    padding: 3px 6px;
+  }
+  
+  .badge {
+    font-size: 0.7rem;
+    padding: 3px 5px;
+  }
+}
+
+/* Estilo para a informação de palavras-chave */
+.criteria {
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.criterion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.criterion-label {
+  font-size: 0.85rem;
+  color: #ddd;
+  font-weight: 500;
+}
+
+.criterion-value {
+  font-size: 0.8rem;
+  color: #ffcc00;
+  font-weight: bold;
+}
+
+.compact-list {
+  list-style-type: disc;
+  padding-left: 18px;
+  margin: 8px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.compact-item {
+  font-size: 0.8rem;   /* letras menores */
+  line-height: 1.3;
+  color: #f1f1f1;
+}

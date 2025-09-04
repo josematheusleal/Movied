@@ -94,9 +94,10 @@ public class Grafo {
         return (double) intersection.size() / union.size();
     }
     
-    public Vertice getVerticePorNome(String nome) {
-        return indiceVertices.get(nome);
-    }
+   public Optional<Vertice> getVerticePorNome(String nome) {
+    // Optional.ofNullable cria um Optional que pode conter um valor ou ser vazio (se get(nome) retornar null).
+    return Optional.ofNullable(indiceVertices.get(nome));
+}
 
     public List<Vertice> getVertices() {
         return vertices;
