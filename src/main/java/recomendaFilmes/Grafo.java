@@ -122,7 +122,11 @@ public class Grafo {
             double directorContribution,    // contribuição numérica (ex: 0.25 se houver mesmo diretor)
             double producerContribution,    // contribuição numérica (ex: 0.20 se houver mesma produtora)
             double keywordsContribution,    // contribuição numérica (fraction * pesoKeywords)
-            double weight                   // soma das contribuições (0..1)
+            double weight,
+            int sharedGenresCount,
+            int totalGenresUnion,
+            double genreFraction,
+            double genreContribution                 // soma das contribuições (0..1)
     ) {}
 
     /**
@@ -130,14 +134,23 @@ public class Grafo {
      */
     public SimilarityBreakdown calcularBreakdown(Vertice v1, Vertice v2) {
         // pesos do grafo (mesmos usados em calcularSimilaridade)
-        double pesoDiretor = 0.25;
+        double pesoDiretor = 0.15;
         double pesoAtor = 0.15;
-        double pesoKeywords = 0.40;
-        double pesoProdutora = 0.20;
+        double pesoKeywords = 0.35;
+        double pesoProdutora = 0.15;
+        double pesoGenero = 0.20;
 
         boolean sameActor = v1.getAtorPrincipal() != null && v1.getAtorPrincipal().equalsIgnoreCase(v2.getAtorPrincipal());
         boolean sameDirector = v1.getDiretor() != null && v1.getDiretor().equalsIgnoreCase(v2.getDiretor());
         boolean sameProducer = v1.getProdutora() != null && v1.getProdutora().equalsIgnoreCase(v2.getProdutora());
+
+        double genreFraction = calcularSimilaridadeDeLista(v1.getGeneros(), v2.getGeneros());
+        Set<String> generos1 = new HashSet<>(v1.getGeneros());
+        Set<String> generos2 = new HashSet<>(v2.getGeneros());
+        Set<String> generosIntersection = new HashSet<>(generos1);
+        generosIntersection.retainAll(generos2);
+        Set<String> generosUnion = new HashSet<>(generos1);
+        generosUnion.addAll(generos2);
 
         // keywords -> lowercase sets for robust comparison
         List<String> k1 = v1.getKeywords() == null ? Collections.emptyList() : v1.getKeywords();
@@ -158,8 +171,8 @@ public class Grafo {
         double directorContrib = sameDirector ? pesoDiretor : 0.0;
         double producerContrib = sameProducer ? pesoProdutora : 0.0;
         double keywordsContrib = keywordFraction * pesoKeywords;
-
-        double weight = actorContrib + directorContrib + producerContrib + keywordsContrib;
+        double genreContribution = pesoGenero * genreFraction;
+        double weight = actorContrib + directorContrib + producerContrib + keywordsContrib + genreContribution;
 
         return new SimilarityBreakdown(
                 sameActor,
@@ -172,7 +185,11 @@ public class Grafo {
                 directorContrib,
                 producerContrib,
                 keywordsContrib,
-                weight
+                weight,
+                generosIntersection.size(),
+                generosUnion.size(),
+                genreFraction,
+                genreContribution
         );
     }
 }

@@ -29,6 +29,8 @@ record MovieRecommendationDTO(
     double director_contribution,
     double production_contribution,
     double keywords_contribution,
+    double genre_contribution, 
+    List<String> shared_genres,
     double score
 ) {}
 
@@ -105,6 +107,10 @@ public class RecommendationController {
             // Pega os detalhes do cálculo
             Grafo.SimilarityBreakdown bd = grafo.calcularBreakdown(filmeBase, verticeRecomendado);
 
+            List<String> sharedGenres = filmeBase.getGeneros().stream()
+                .filter(g -> verticeRecomendado.getGeneros().contains(g))
+                .collect(Collectors.toList());
+
             return new MovieRecommendationDTO(
                 verticeRecomendado.getIdTmdb(),
                 verticeRecomendado.getNome(),
@@ -120,6 +126,8 @@ public class RecommendationController {
                 Math.round(bd.directorContribution() * 1000.0) / 10.0,
                 Math.round(bd.producerContribution() * 1000.0) / 10.0,
                 Math.round(bd.keywordsContribution() * 1000.0) / 10.0,
+                Math.round(bd.genreContribution() * 1000.0) / 10.0,
+                sharedGenres,
                 Math.round(bd.weight() * 1000.0) / 10.0
             );
         } catch (IOException e) {

@@ -106,31 +106,40 @@ function createMovieCard(movie) {
   const actorText = movie.same_main_actor ? 'Mesmo ator principal' : 'Ator principal diferente';
   const directorText = movie.same_director ? 'Mesmo diretor' : 'Diretor diferente';
   const productionText = movie.same_production_company ? 'Mesma produtora' : 'Produtora diferente';
-
+  
+  // Gêneros compartilhados - verifica se a propriedade existe
+  const sharedGenres = movie.shared_genres || [];
+  const hasSharedGenres = sharedGenres.length > 0;
+  const genreTags = hasSharedGenres 
+    ? sharedGenres.map(genre => `<span class="genre-tag">${genre}</span>`).join('')
+    : '<span class="no-genres">Nenhum gênero em comum</span>';
+                
   listItem.innerHTML = `
-<div class="movie-poster" style="background-image: url('${posterUrl}')"></div>
-    <div class="movie-info">
-      <div class="movie-title">${escapeHtml(movie.title)}</div>
-      <div class="movie-subline">
-        <div class="movie-rating"><i class="fas fa-star"></i> ${rating}</div>
-        <div class="movie-score-badge">Score: <strong>${totalScore}</strong>/100</div>
+  <div class="movie-poster" style="background-image: url('${posterUrl}')"></div>
+  <div class="movie-info">
+    <div class="movie-title">${escapeHtml(movie.title)}</div>
+    <div class="movie-subline">
+      <div class="movie-rating"><i class="fas fa-star"></i> ${rating}</div>
+      <div class="movie-score-badge">Score: <strong>${totalScore}</strong>/100</div>
+    </div>
+
+    <div class="similarity">
+      <div class="badges">
+        <span class="badge ${movie.same_main_actor ? 'match' : 'no-match'}">${actorText}</span>
+        <span class="badge ${movie.same_director ? 'match' : 'no-match'}">${directorText}</span>
+        <span class="badge ${movie.same_production_company ? 'match' : 'no-match'}">${productionText}</span>
       </div>
+      
+      <div class="shared-genres">${genreTags}</div>
 
-      <div class="similarity">
-        <div class="badges">
-          <span class="badge ${movie.same_main_actor ? 'match' : 'no-match'}">${actorText}</span>
-          <span class="badge ${movie.same_director ? 'match' : 'no-match'}">${directorText}</span>
-          <span class="badge ${movie.same_production_company ? 'match' : 'no-match'}">${productionText}</span>
-        </div>
-
-        <div class="criteria">
-          <div class="criterion">
-            <div class="criterion-label">Palavras-chave <span class="criterion-value">(${movie.shared_keywords_count}/${movie.total_keywords_count})</span></div>
-          </div>
+      <div class="criteria">
+        <div class="criterion">
+          <div class="criterion-label">Palavras-chave <span class="criterion-value">(${movie.shared_keywords_count}/${movie.total_keywords_count})</span></div>
         </div>
       </div>
     </div>
-  `;
+  </div>
+`;
 
   resultsList.appendChild(listItem);
 }

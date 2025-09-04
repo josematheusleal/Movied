@@ -10,7 +10,6 @@ import recomendaFilmes.Vertice;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-//import java.util.Optional;
 
 @Service // Marca esta classe como um Serviço do Spring (um componente singleton)
 public class RecommendationGraphService {
