@@ -23,7 +23,7 @@ public class Vertice {
         this.keywords = keywords;
     }
 
-    // Getters
+    
     public String getNome() { return nome; }
     public int getIdTmdb() { return idTmdb; }
     public List<String> getGeneros() { return generos; }

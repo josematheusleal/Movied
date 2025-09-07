@@ -95,7 +95,7 @@ public class Grafo {
     }
     
    public Optional<Vertice> getVerticePorNome(String nome) {
-    // Optional.ofNullable cria um Optional que pode conter um valor ou ser vazio (se get(nome) retornar null).
+  
     return Optional.ofNullable(indiceVertices.get(nome));
 }
 
@@ -107,33 +107,25 @@ public class Grafo {
         return arestas;
     }
 
-    /**
-     * Record público que descreve o breakdown (componentes) da similaridade entre 2 vértices.
-     * weight: valor entre 0.0 e 1.0 já ponderado pelos pesos definidos no grafo.
-     */
     public static record SimilarityBreakdown(
             boolean sameActor,
             boolean sameDirector,
             boolean sameProducer,
             int sharedKeywordsCount,
             int totalKeywordsUnion,
-            double keywordFraction,         // 0..1
-            double actorContribution,       // contribuição numérica (ex: 0.15 se houver mesma ator)
-            double directorContribution,    // contribuição numérica (ex: 0.25 se houver mesmo diretor)
-            double producerContribution,    // contribuição numérica (ex: 0.20 se houver mesma produtora)
-            double keywordsContribution,    // contribuição numérica (fraction * pesoKeywords)
+            double keywordFraction,         
+            double actorContribution,       
+            double directorContribution,    
+            double producerContribution,   
+            double keywordsContribution,   
             double weight,
             int sharedGenresCount,
             int totalGenresUnion,
             double genreFraction,
-            double genreContribution                 // soma das contribuições (0..1)
+            double genreContribution               
     ) {}
 
-    /**
-     * Calcula e retorna o breakdown completo entre v1 e v2 usando a mesma fórmula interna que gerarArestasSimilaridade.
-     */
     public SimilarityBreakdown calcularBreakdown(Vertice v1, Vertice v2) {
-        // pesos do grafo (mesmos usados em calcularSimilaridade)
         double pesoDiretor = 0.15;
         double pesoAtor = 0.15;
         double pesoKeywords = 0.35;
@@ -152,7 +144,6 @@ public class Grafo {
         Set<String> generosUnion = new HashSet<>(generos1);
         generosUnion.addAll(generos2);
 
-        // keywords -> lowercase sets for robust comparison
         List<String> k1 = v1.getKeywords() == null ? Collections.emptyList() : v1.getKeywords();
         List<String> k2 = v2.getKeywords() == null ? Collections.emptyList() : v2.getKeywords();
         Set<String> set1 = new HashSet<>(k1.stream().filter(Objects::nonNull).map(s -> s.toLowerCase().trim()).collect(Collectors.toSet()));

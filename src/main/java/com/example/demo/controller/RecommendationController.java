@@ -1,4 +1,4 @@
-package com.example.demo.controller; // Verifique se o pacote está correto
+package com.example.demo.controller; 
 
 import com.example.demo.RecommendationGraphService;
 import com.google.gson.JsonObject;
@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// NOVO DTO DETALHADO
 record MovieRecommendationDTO(
     int id,
     String title,
@@ -38,7 +37,7 @@ record MovieRecommendationDTO(
 public class RecommendationController {
 
     @Autowired
-    private RecommendationGraphService graphService; // Serviço com o grafo pré-calculado
+    private RecommendationGraphService graphService; 
 
     private final TMDbClient tmdb = new TMDbClient();
 
@@ -48,15 +47,13 @@ public class RecommendationController {
         System.out.println("Recebida requisição para: " + movieName);
         Grafo grafo = graphService.getGrafo();
 
-        // ROTA RÁPIDA: Tenta encontrar no grafo pré-calculado
         if (grafo != null) {
             Optional<Vertice> filmeBaseOpt = grafo.getVerticePorNome(movieName);
             if (filmeBaseOpt.isPresent()) {
                 System.out.println("Filme encontrado no grafo pré-calculado. Retornando recomendações rápidas.");
                 Vertice filmeBase = filmeBaseOpt.get();
                 List<Vertice> recomendacoes = grafo.recomendarFilmes(filmeBase, 10);
-                
-                // Converte para o DTO detalhado usando o novo método 'calcularBreakdown'
+               
                 return recomendacoes.stream()
                     .map(vertice -> convertVerticeToDetailedDTO(filmeBase, vertice, grafo))
                     .filter(Objects::nonNull)
@@ -64,7 +61,6 @@ public class RecommendationController {
             }
         }
 
-        // ROTA DE FALLBACK: Se não encontrou, executa a busca online
         System.out.println("Filme não encontrado no grafo. Iniciando busca online em tempo real...");
         return performOnlineRecommendation(movieName);
     }
@@ -90,7 +86,6 @@ public class RecommendationController {
         grafoTemporario.gerarArestasSimilaridade();
         List<Vertice> recomendacoes = grafoTemporario.recomendarFilmes(filmeBase, 10);
 
-        // Converte para o DTO detalhado, usando o grafo temporário para o breakdown
         return recomendacoes.stream()
             .map(vertice -> convertVerticeToDetailedDTO(filmeBase, vertice, grafoTemporario))
             .filter(Objects::nonNull)
@@ -104,7 +99,6 @@ public class RecommendationController {
                                 ? detalhes.get("poster_path").getAsString() : null;
             double voteAvg = detalhes.has("vote_average") ? detalhes.get("vote_average").getAsDouble() : 0.0;
 
-            // Pega os detalhes do cálculo
             Grafo.SimilarityBreakdown bd = grafo.calcularBreakdown(filmeBase, verticeRecomendado);
 
             List<String> sharedGenres = filmeBase.getGeneros().stream()
@@ -122,7 +116,7 @@ public class RecommendationController {
                 bd.sharedKeywordsCount(),
                 bd.totalKeywordsUnion(),
                 bd.keywordFraction(),
-                Math.round(bd.actorContribution() * 1000.0) / 10.0, // Converte para % com 1 casa decimal
+                Math.round(bd.actorContribution() * 1000.0) / 10.0, 
                 Math.round(bd.directorContribution() * 1000.0) / 10.0,
                 Math.round(bd.producerContribution() * 1000.0) / 10.0,
                 Math.round(bd.keywordsContribution() * 1000.0) / 10.0,

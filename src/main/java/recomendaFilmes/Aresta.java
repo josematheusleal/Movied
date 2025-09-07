@@ -10,8 +10,7 @@ public class Aresta {
         this.destino = destino;
         this.peso = peso;
     }
-
-    // Getters
+   
     public Vertice getOrigem() { return origem; }
     public Vertice getDestino() { return destino; }
     public double getPeso() { return peso; }
