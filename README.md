@@ -9,7 +9,7 @@ Funcionamento do Sistema:
 - Coleta metadados de cada filme: gêneros, diretor, ator principal, produtora e palavras-chave
 
 2. Construção do Grafo
-- Após uma pausa de 10~15min (dependendo da quantidade de páginas escolhidas para a construção do grafo). Após a contrução é exibida uma mensagem de confirmação no terminal "Grafo concluído com sucesso!".
+- Após uma pausa de 10~15min (dependendo da quantidade de páginas escolhidas para a construção do grafo) é exibida uma mensagem de confirmação no terminal "Grafo concluído com sucesso!".
 - Cada filme vira um vértice no grafo
 - O cálculo de similaridade entre filmes é executado em segundo plano
 - As conexões entre filmes (arestas) recebem "pesos" baseados na similaridade
@@ -21,7 +21,7 @@ Funcionamento do Sistema:
 
 Tecnologia Principal:
 - Java + Spring Boot com grafo construído em memória
-- A inicialização é lenta (minutos) pois processa milhares de filmes
+- A inicialização inicial é lenta (minutos) pois processa milhares de filmes
 - As recomendações são geradas instantaneamente após o grafo estar pronto
 
 Uso:
