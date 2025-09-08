@@ -2,7 +2,6 @@ package com.example.demo;
 
 import com.google.gson.JsonObject;
 import jakarta.annotation.PostConstruct; 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import recomendaFilmes.Grafo;
 import recomendaFilmes.TMDbClient;
@@ -23,22 +22,16 @@ public class RecommendationGraphService {
         new Thread(this::construirGrafoCompleto).start();
     }
 
-    @Scheduled(cron = "0 0 */6 * * *")
-    public void construirGrafoAgendado() {
-        System.out.println("Iniciando reconstrução agendada do grafo de recomendações...");
-        construirGrafoCompleto();
-    }
-
     public Grafo getGrafo() {
         return this.grafoDeRecomendacoes;
     }
 
     private void construirGrafoCompleto() {
         try {
-            System.out.println("Iniciando processo de construção do grafo...");
+            System.out.println("\nIniciando processo de construção do grafo...\n");
             Grafo novoGrafo = new Grafo();
            
-            List<JsonObject> filmesPopulares = tmdbClient.discoverMoviesByGenres(Collections.emptyList(), 200);
+            List<JsonObject> filmesPopulares = tmdbClient.discoverMoviesByGenres(Collections.emptyList(), 250);
 
             for (JsonObject filmeJson : filmesPopulares) {
                 int id = filmeJson.get("id").getAsInt();

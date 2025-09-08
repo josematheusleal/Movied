@@ -35,45 +35,22 @@ public class Grafo {
                 .map(Aresta::getDestino)
                 .collect(Collectors.toList());
     }
-
+    
     public void gerarArestasSimilaridade() {
+        arestas.clear();
         for (int i = 0; i < vertices.size(); i++) {
             for (int j = i + 1; j < vertices.size(); j++) {
                 Vertice v1 = vertices.get(i);
                 Vertice v2 = vertices.get(j);
-                double similaridade = calcularSimilaridade(v1, v2);
-                adicionarAresta(v1, v2, similaridade);
-                adicionarAresta(v2, v1, similaridade);
+                SimilarityBreakdown breakdown = calcularBreakdown(v1, v2);
+                if (breakdown.weight() > 0) {
+                    adicionarAresta(v1, v2, breakdown.weight());
+                    adicionarAresta(v2, v1, breakdown.weight());
+                }
             }
         }
     }
-
-    private double calcularSimilaridade(Vertice v1, Vertice v2) {
-        boolean atorEmComum = Objects.equals(v1.getAtorPrincipal(), v2.getAtorPrincipal());
-        boolean diretorEmComum = Objects.equals(v1.getDiretor(), v2.getDiretor());
-        boolean produtoraEmComum = Objects.equals(v1.getProdutora(), v2.getProdutora());
-        boolean keywordsEmComum = !Collections.disjoint(v1.getKeywords(), v2.getKeywords());
-
-        if (!atorEmComum && !diretorEmComum && !produtoraEmComum && !keywordsEmComum) {
-            return 0.0;
-        }
-
-        double pesoDiretor = 0.25;
-        double pesoAtor = 0.15;
-        double pesoKeywords = 0.40;
-        double pesoProdutora = 0.20;
-
-        double similaridadeDiretor = diretorEmComum ? 1.0 : 0.0;
-        double similaridadeAtor = atorEmComum ? 1.0 : 0.0;
-        double similaridadeKeywords = calcularSimilaridadeDeLista(v1.getKeywords(), v2.getKeywords());
-        double similaridadeProdutora = produtoraEmComum ? 1.0 : 0.0;
-
-        return (pesoDiretor * similaridadeDiretor) +
-               (pesoAtor * similaridadeAtor) +
-               (pesoKeywords * similaridadeKeywords) +
-               (pesoProdutora * similaridadeProdutora);
-    }
-
+    
     private double calcularSimilaridadeDeLista(List<String> list1, List<String> list2) {
         if (list1 == null || list2 == null || list1.isEmpty() || list2.isEmpty()) {
             return 0.0;
