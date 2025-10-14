@@ -1,4 +1,5 @@
 Movied API - Sistema de Recomendação de Filmes
+
 Este projeto é uma API REST desenvolvida em Java com Spring Boot que oferece recomendações de filmes com base em um grafo de similaridade. O sistema constrói uma rede de filmes onde as conexões representam o quão parecidos eles são, permitindo sugestões personalizadas e precisas. Aqui está como ele opera:
 
 Funcionamento do Sistema:
